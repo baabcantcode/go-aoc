@@ -19,7 +19,7 @@ var day2cmd = &cobra.Command{
 	Use: "2",
 	Run: func(cmd *cobra.Command, args []string) {
 		util.Scan("./data/d2p1.txt", d2part1)
-		// util.Scan("./data/d1p1.txt", d1p2)
+		util.Scan("./data/d2p1.txt", d2part2)
 	},
 }
 
@@ -30,6 +30,48 @@ func init() {
 var rcubes = 12
 var bcubes = 14
 var gcubes = 13
+
+func d2part2(scanner *bufio.Scanner) string {
+	sum := 0
+	for scanner.Scan() {
+		// just gonna trust its ascii, since i know the input
+		fullstr := scanner.Text()
+		tag_split := strings.Split(fullstr, ":")
+		if len(tag_split) < 2 {
+			continue
+		}
+		maxr, maxb, maxg := 0, 0, 0
+		pulls := strings.Split(tag_split[1], ";")
+		for _, ball_counts := range pulls {
+			iballs := strings.Split(ball_counts, ",")
+			// print(iballs)
+			for _, ball_count := range iballs {
+				count_color := strings.Split(strings.Trim(ball_count, " "), " ")
+				if len(count_color) < 2 {
+					continue
+				}
+				count, err := strconv.Atoi(count_color[0])
+				if err != nil {
+					print("bad conversion", count_color[0])
+					continue
+				}
+				switch color := strings.Trim(count_color[1], " "); color {
+				case "red":
+					maxr = max(count, maxr)
+				case "blue":
+					maxb = max(count, maxb)
+				case "green":
+					maxg = max(count, maxg)
+				}
+
+			}
+		}
+		sum += maxg * maxr * maxb
+		// print(fullstr, maxr, maxg, maxb, sum)
+	}
+	print(sum)
+	return fmt.Sprint(sum)
+}
 
 func d2part1(scanner *bufio.Scanner) string {
 	sum := 0
@@ -44,7 +86,7 @@ func d2part1(scanner *bufio.Scanner) string {
 		pulls := strings.Split(tag_split[1], ";")
 		for _, ball_counts := range pulls {
 			iballs := strings.Split(ball_counts, ",")
-			print(iballs)
+			// print(iballs)
 			for _, ball_count := range iballs {
 				count_color := strings.Split(strings.Trim(ball_count, " "), " ")
 				if len(count_color) < 2 {
@@ -76,14 +118,14 @@ func d2part1(scanner *bufio.Scanner) string {
 			}
 		}
 		if invalid == false {
-			print(fullstr, "valid")
+			// print(fullstr, "valid")
 			count, err := strconv.Atoi(strings.TrimPrefix(tag_split[0], "Game "))
 			if err != nil {
 				continue
 			}
 			sum += count
 		} else {
-			print(fullstr, "invalid")
+			// print(fullstr, "invalid")
 		}
 	}
 	print(sum)
